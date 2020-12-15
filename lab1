@@ -1,17 +1,21 @@
 import cv2
-E = 0, 1100 #погрешность
+
+E = 0, 1200  # погрешность
 k1 = 1896, 15
 k2 = 8063, 1699
 k3 = 6203, 7550
 k4 = 39, 5863
 
-#парсим МТЛ файл для получения значений
+
+# парсим МТЛ файл для получения значений
 def get_coord(word):
     inp = open('LE07_L1TP_201024_20010113_20170208_01_T1_MTL.txt').readlines()
     for i in iter(inp):
         if word in i:
             original = i[4:]
             return float(original.replace(word + " = ", ""))
+
+
 CORNER_UL_LAT_PRODUCT = get_coord('CORNER_UL_LAT_PRODUCT')
 CORNER_UL_LON_PRODUCT = get_coord('CORNER_UL_LON_PRODUCT')
 CORNER_UR_LAT_PRODUCT = get_coord('CORNER_UR_LAT_PRODUCT')
@@ -21,21 +25,23 @@ CORNER_LL_LON_PRODUCT = get_coord('CORNER_LL_LON_PRODUCT')
 CORNER_LR_LAT_PRODUCT = get_coord('CORNER_LR_LAT_PRODUCT')
 CORNER_LR_LON_PRODUCT = get_coord('CORNER_LR_LON_PRODUCT')
 TOWNS_COORDS = 51.50853, -0.1257400
+#CORNER_UL_LON_PRODUCT = -1.47609
+#CORNER_UR_LAT_PRODUCT = 52.75120
+#CORNER_UR_LON_PRODUCT = 2.19253
+#CORNER_LL_LAT_PRODUCT = 50.62261
+#CORNER_LL_LON_PRODUCT = -1.27858
+#CORNER_LR_LAT_PRODUCT = 50.69866
+#CORNER_LR_LON_PRODUCT = 2.22829
 
 delt_lat = ((CORNER_UL_LAT_PRODUCT + CORNER_UR_LAT_PRODUCT) / 2 - (CORNER_LL_LAT_PRODUCT + CORNER_LR_LAT_PRODUCT) / 2)
-delt_lon = abs((CORNER_UL_LON_PRODUCT + CORNER_UR_LON_PRODUCT) / 2 - (CORNER_LL_LON_PRODUCT + CORNER_LR_LON_PRODUCT) / 2)
+delt_lon = abs(
+    (CORNER_UL_LON_PRODUCT + CORNER_UR_LON_PRODUCT) / 2 - (CORNER_LL_LON_PRODUCT + CORNER_LR_LON_PRODUCT) / 2)
 print('Разница:', delt_lat, delt_lon)
-    #CORNER_UL_LAT_PRODUCT = 52.66938
-    #ORNER_UL_LON_PRODUCT = -1.47609
-    #CORNER_UR_LAT_PRODUCT = 52.75120
-    #CORNER_UR_LON_PRODUCT = 2.19253
-    #CORNER_LL_LAT_PRODUCT = 50.62261
-    #CORNER_LL_LON_PRODUCT = -1.27858
-    #CORNER_LR_LAT_PRODUCT = 50.69866
-    #CORNER_LR_LON_PRODUCT = 2.22829
+
 z_x = (((CORNER_UL_LON_PRODUCT - (CORNER_LL_LON_PRODUCT)) / 2) - (TOWNS_COORDS[1])) / delt_lon
 z_y = (TOWNS_COORDS[0] - (CORNER_LR_LAT_PRODUCT + CORNER_LL_LAT_PRODUCT) / 2) / delt_lat
 print('Z: ', z_x, z_y)
+
 
 def liner_to_center(p1, p2, kof):
     l = kof / (1 - kof)
@@ -50,9 +56,12 @@ def liner_to_center(p1, p2, kof):
         ym = (p2[1] + l * p1[1]) / (1 + l)
         M = xm, ym
         return M
+
+
 line1 = liner_to_center(k1, k2, z_x)
 line2 = liner_to_center(k4, k1, z_y)
 print(line1, line2)
+
 
 def show_result(result):
     screen_res = 1280, 720
@@ -69,9 +78,11 @@ def show_result(result):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
     img = cv2.imread("LE07_L1TP_201024_20010113_20170208_01_T1_B2.tif")
-    img = cv2.line(img, (k1[0], k1[1]), (int(line1[0]), int(line1[1])), (255, 0 , 0), 10)
+    img = cv2.line(img, (k1[0], k1[1]), (int(line1[0]), int(line1[1])), (255, 0, 0), 10)
     img = cv2.line(img, (k4[0], k4[1]), (int(line2[0]), int(line2[1])), (255, 0, 0), 10)
-    img = cv2.circle(img, (int(line1[0] + E[0]), int(line2[1]+E[1])), 500, (255, 0, 0), thickness=10)
+    img = cv2.circle(img, (int(line1[0]), int(line2[1] + E[1])), 500, (255, 0, 0), thickness=10)
     show_result(img)
+

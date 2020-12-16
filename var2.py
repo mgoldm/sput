@@ -5,7 +5,7 @@ from rasterio import plot
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from PIL import Image
+
 
 os.listdir('../sputnik/')  # даем программе доступ к определенной папке для упрощения ввода
 
@@ -36,7 +36,7 @@ def ndvi_ppros(red1, nir1):
 if __name__ == '__main__':
     a = cv2.imread("LE07_L1TP_201024_20010113_20170208_01_T1_B3.tif")
     b = cv2.imread("LE07_L1TP_201024_20010113_20170208_01_T1_B4.tif")
-    # ndvi_ppros(a,b)
+    #ndvi_ppros(a,b)
 
     # открываем тиф файлы в виде матриц
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     # накладываем на снимок палитру "gist_earth"
 
-    tk = sns.heatmap(ndvi, cmap="Spectral", vmin=-1, vmax=1, xticklabels=False, yticklabels=False)
+    tk = sns.heatmap(ndvi, cmap="Spectral", vmin=-1, vmax=1)
 
     # название окна
 

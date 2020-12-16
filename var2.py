@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     # накладываем на снимок палитру "gist_earth"
 
-    tk = sns.heatmap(ndvi, cmap="gist_earth", vmin=-1, vmax=1, xticklabels=False, yticklabels=False)
+    tk = sns.heatmap(ndvi, cmap="Spectral", vmin=-1, vmax=1, xticklabels=False, yticklabels=False)
 
     # название окна
 

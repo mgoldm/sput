@@ -1,6 +1,6 @@
 import cv2
 
-E = 0, 1200  # погрешность
+E = 0, 1100  # погрешность
 k1 = 1896, 15
 k2 = 8063, 1699
 k3 = 6203, 7550
@@ -25,24 +25,17 @@ CORNER_LL_LON_PRODUCT = get_coord('CORNER_LL_LON_PRODUCT')
 CORNER_LR_LAT_PRODUCT = get_coord('CORNER_LR_LAT_PRODUCT')
 CORNER_LR_LON_PRODUCT = get_coord('CORNER_LR_LON_PRODUCT')
 TOWNS_COORDS = 51.50853, -0.1257400
-#CORNER_UL_LON_PRODUCT = -1.47609
-#CORNER_UR_LAT_PRODUCT = 52.75120
-#CORNER_UR_LON_PRODUCT = 2.19253
-#CORNER_LL_LAT_PRODUCT = 50.62261
-#CORNER_LL_LON_PRODUCT = -1.27858
-#CORNER_LR_LAT_PRODUCT = 50.69866
-#CORNER_LR_LON_PRODUCT = 2.22829
-
+#Расчитываем разницу между середин сторон
 delt_lat = ((CORNER_UL_LAT_PRODUCT + CORNER_UR_LAT_PRODUCT) / 2 - (CORNER_LL_LAT_PRODUCT + CORNER_LR_LAT_PRODUCT) / 2)
 delt_lon = abs(
     (CORNER_UL_LON_PRODUCT + CORNER_UR_LON_PRODUCT) / 2 - (CORNER_LL_LON_PRODUCT + CORNER_LR_LON_PRODUCT) / 2)
 print('Разница:', delt_lat, delt_lon)
-
-z_x = (((CORNER_UL_LON_PRODUCT - (CORNER_LL_LON_PRODUCT)) / 2) - (TOWNS_COORDS[1])) / delt_lon
+#Находим коэф. отношения 1 части стороны к другой
+z_x = (((CORNER_UL_LON_PRODUCT + abs(CORNER_LL_LON_PRODUCT)) / 2)- (TOWNS_COORDS[1])) / delt_lon
 z_y = (TOWNS_COORDS[0] - (CORNER_LR_LAT_PRODUCT + CORNER_LL_LAT_PRODUCT) / 2) / delt_lat
 print('Z: ', z_x, z_y)
 
-
+#находим длину части стороны
 def liner_to_center(p1, p2, kof):
     l = kof / (1 - kof)
     if kof <= 0.5:
@@ -62,7 +55,7 @@ line1 = liner_to_center(k1, k2, z_x)
 line2 = liner_to_center(k4, k1, z_y)
 print(line1, line2)
 
-
+#функция, которая показывает снимок
 def show_result(result):
     screen_res = 1280, 720
     scale_width = screen_res[0] / result.shape[1]
@@ -81,8 +74,7 @@ def show_result(result):
 
 if __name__ == '__main__':
     img = cv2.imread("LE07_L1TP_201024_20010113_20170208_01_T1_B2.tif")
-    img = cv2.line(img, (k1[0], k1[1]), (int(line1[0]), int(line1[1])), (255, 0, 0), 10)
-    img = cv2.line(img, (k4[0], k4[1]), (int(line2[0]), int(line2[1])), (255, 0, 0), 10)
+    #img = cv2.line(img, (k1[0], k1[1]), (int(line1[0]), int(line1[1])), (255, 0, 0), 10)
+    #img = cv2.line(img, (k4[0], k4[1]), (int(line2[0]), int(line2[1])), (255, 0, 0), 10)
     img = cv2.circle(img, (int(line1[0]), int(line2[1] + E[1])), 500, (255, 0, 0), thickness=10)
     show_result(img)
-
